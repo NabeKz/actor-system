@@ -1,0 +1,7 @@
+[tools]
+atlas = "latest"
+docker-compose = "latest"
+erlang = "latest"
+gleam = "latest"
+rebar = "latest"
+sqlite = "latest"
