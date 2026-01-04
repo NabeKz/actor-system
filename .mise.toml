@@ -5,3 +5,10 @@ erlang = "latest"
 gleam = "latest"
 rebar = "latest"
 sqlite = "latest"
+
+[tasks.dev]
+run = """
+  watchexec --restart --clear --wrap-process=session --stop-signal SIGTERM \
+  --exts gleam --watch src/ -- "gleam run"
+"""
+
