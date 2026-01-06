@@ -1,13 +1,13 @@
-import features/account/model
+import features/account/model.{type Balance}
 import gleam/erlang/process.{type Subject}
 import gleam/otp/actor
 import gleam/result
 
 // Actor のインターフェース
 pub type AccountMessage {
-  GetBalance(reply_to: Subject(Int))
-  Deposit(amount: Int, reply_to: Subject(Result(Int, String)))
-  Withdraw(amount: Int, reply_to: Subject(Result(Int, String)))
+  GetBalance(reply_to: Subject(Balance))
+  Deposit(amount: Int, reply_to: Subject(Result(Balance, String)))
+  Withdraw(amount: Int, reply_to: Subject(Result(Balance, String)))
 }
 
 pub opaque type AccountActor {
@@ -18,8 +18,8 @@ pub fn start(
   account_id: String,
   initial_balance: Int,
 ) -> Result(AccountActor, actor.StartError) {
-  let initial_state =
-    model.AccountState(account_id:, balance: initial_balance, events: [])
+  let assert Ok(balance) = model.new_balance(initial_balance)
+  let initial_state = model.AccountState(account_id:, balance:, events: [])
 
   actor.new(initial_state)
   |> actor.on_message(handle_message)
@@ -87,7 +87,8 @@ fn validate_withdraw(
   state: model.AccountState,
   amount: Int,
 ) -> Result(model.AccountEvent, String) {
-  case amount > 0, amount <= state.balance {
+  let current_balance = model.balance_to_int(state.balance)
+  case amount > 0, amount <= current_balance {
     True, True -> {
       let timestamp = 0
       model.MoneyWithdrawn(state.account_id, amount, timestamp)
