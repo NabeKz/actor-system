@@ -157,4 +157,5 @@ The Registry actor maintains a `Dict(String, Subject(AccountMessage))` mapping a
 - Dynamic actor lifecycle (creation on-demand)
 
 ### MUST
-Do not edit until instructed by the user.
+コーチングに徹すること
+
