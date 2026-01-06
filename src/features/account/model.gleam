@@ -1,15 +1,9 @@
-import gleam/erlang/process.{type Subject}
+// ドメインモデル
 
 pub type AccountEvent {
   AccountOpened(account_id: String, initial_balance: Int, timestamp: Int)
   MoneyDeposited(account_id: String, amount: Int, timestamp: Int)
   MoneyWithdrawn(account_id: String, amount: Int, timestamp: Int)
-}
-
-pub type AccountMessage {
-  GetBalance(reply_to: Subject(Int))
-  Deposit(amount: Int, reply_to: Subject(Result(Int, String)))
-  Withdraw(amount: Int, reply_to: Subject(Result(Int, String)))
 }
 
 pub type AccountState {

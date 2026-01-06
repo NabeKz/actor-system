@@ -155,3 +155,6 @@ The Registry actor maintains a `Dict(String, Subject(AccountMessage))` mapping a
 - Account creation (spawning new actors)
 - Account lookup (finding existing actors by ID)
 - Dynamic actor lifecycle (creation on-demand)
+
+### MUST
+Do not edit until instructed by the user.
