@@ -156,6 +156,3 @@ The Registry actor maintains a `Dict(String, Subject(AccountMessage))` mapping a
 - Account lookup (finding existing actors by ID)
 - Dynamic actor lifecycle (creation on-demand)
 
-### MUST
-コーチングに徹すること
-

@@ -1,3 +1,4 @@
+import app/context
 import app/routes
 import gleam/erlang/process
 import mist
@@ -6,7 +7,7 @@ import wisp/wisp_mist
 
 pub fn main() -> Nil {
   let secret_key_base = wisp.random_string(64)
-
+  let ctx = context.initialize()
   let assert Ok(_) =
     wisp_mist.handler(routes.handle_request, secret_key_base)
     |> mist.new

@@ -67,6 +67,10 @@ pub fn handle_message(
   }
 }
 
+pub fn subject(actor: AccountActor) -> Subject(AccountMessage) {
+  actor.subject
+}
+
 fn validate_deposit(
   state: model.AccountState,
   amount: Int,
