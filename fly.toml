@@ -31,7 +31,7 @@ primary_region = 'nrt'  # Tokyo region
     soft_limit = 1000
 
 [[vm]]
-  memory = '512mb'
+  memory = '256mb'
   cpu_kind = 'shared'
   cpus = 1
 
