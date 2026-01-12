@@ -17,6 +17,7 @@ WORKDIR /app
 
 COPY .mise.toml .
 
+RUN mise trust
 RUN mise install
 
 COPY gleam.toml manifest.toml ./
