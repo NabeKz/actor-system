@@ -34,7 +34,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY --from=builder /app/build /app/build
+COPY --from=builder /app/build/erlang-shipment /app
 
 ENV PORT=5000
 
@@ -43,4 +43,4 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:5000/ || exit 1
 
-CMD ["./build/erlang-shipment/entrypoint.sh", "run"]
+CMD ["/app/entrypoint.sh", "run"]
