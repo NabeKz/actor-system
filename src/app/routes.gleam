@@ -54,6 +54,7 @@ fn post_account(req: Request, ctx: context.Context) {
           |> wisp.json_response(201)
         }
         Error(error_msg) -> {
+          echo error_msg
           // Registry Actorからエラー返却
           wisp.internal_server_error()
         }

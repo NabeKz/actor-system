@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+
+# Build outputs (will be rebuilt in container)
+build/
+
+# mise cache
+.mise.cache
+.mise.lock
+
+# Dependencies (will be downloaded in container)
+**/deps/
+**/_build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test
+test/
+*_test.gleam
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Docker
+Dockerfile
+.dockerignore
+compose.yaml
