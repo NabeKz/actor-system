@@ -3,7 +3,6 @@ import gleam/erlang/process.{type Subject}
 import gleam/otp/actor
 import gleam/result
 
-// Actor のインターフェース
 pub type AccountMessage {
   GetBalance(reply_to: Subject(Balance))
   Deposit(amount: Int, reply_to: Subject(Result(Balance, String)))

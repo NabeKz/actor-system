@@ -7,16 +7,12 @@ import wisp/wisp_mist
 
 pub fn main() -> Nil {
   let secret_key_base = wisp.random_string(64)
-  let ctx = context.initialize()
+  let assert Ok(ctx) = context.initialize()
   let assert Ok(_) =
-    wisp_mist.handler(routes.handle_request, secret_key_base)
+    wisp_mist.handler(routes.handle_request(ctx, _), secret_key_base)
     |> mist.new
     |> mist.port(5000)
     |> mist.start
 
   process.sleep_forever()
-}
-
-fn make_process() {
-  todo
 }

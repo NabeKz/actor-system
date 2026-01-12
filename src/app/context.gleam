@@ -12,3 +12,11 @@ pub fn initialize() -> Result(Context, actor.StartError) {
 
   Context(registry:, generate_id: uuid.v4) |> Ok()
 }
+
+pub fn generate_id(ctx: Context) -> uuid.UUID {
+  ctx.generate_id()
+}
+
+pub fn registry(ctx: Context) -> registry.Registry {
+  ctx.registry
+}
