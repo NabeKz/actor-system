@@ -23,7 +23,7 @@ RUN mise install
 COPY gleam.toml manifest.toml ./
 COPY src ./src
 
-RUN mise exec -- gleam build
+RUN mise exec -- gleam export erlang-shipment
 
 FROM erlang:27-slim
 

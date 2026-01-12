@@ -7,6 +7,9 @@ primary_region = 'nrt'  # Tokyo region
 
 [build]
 
+[deploy]
+  strategy = "immediate"
+
 [env]
   PORT = '5000'
 
