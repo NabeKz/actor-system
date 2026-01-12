@@ -2,7 +2,7 @@
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 
-app = 'gleam-app'
+app = 'actor-system'
 primary_region = 'nrt'  # Tokyo region
 
 [build]
@@ -17,6 +17,13 @@ primary_region = 'nrt'  # Tokyo region
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    timeout = "5s"
+    path = "/"
 
   [http_service.concurrency]
     type = 'connections'
