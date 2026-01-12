@@ -1,46 +1,30 @@
-FROM debian:bookworm-slim AS builder
+FROM erlang:27-alpine AS build
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    git \
-    build-essential \
-    autoconf \
-    libssl-dev \
-    libncurses5-dev \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache build-base
 
-RUN curl https://mise.run | sh
-ENV PATH="/root/.local/bin:${PATH}"
+COPY --from=ghcr.io/gleam-lang/gleam:v1.14.0-erlang-alpine /bin/gleam /bin/gleam
 
 WORKDIR /app
-
-COPY .mise.toml .
-
-RUN mise trust
-RUN mise install
 
 COPY gleam.toml manifest.toml ./
 COPY src ./src
 
-RUN mise exec -- gleam export erlang-shipment
+RUN gleam export erlang-shipment
 
-FROM erlang:27-slim
+FROM erlang:27-alpine
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
-COPY --from=builder /app/build/erlang-shipment /app
+COPY --from=build /app/build/erlang-shipment /app
 
 ENV PORT=5000
 
 EXPOSE 5000
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:5000/ || exit 1
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+#     CMD curl -f http://localhost:5000/ || exit 1
 
-CMD ["/app/entrypoint.sh", "run"]
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["run"]

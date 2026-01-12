@@ -11,10 +11,18 @@ pub fn handle_request(ctx: context.Context, req: Request) {
   let path = wisp.path_segments(req)
 
   case path, req.method {
+    [], Get -> health_check()
+    ["health"], Get -> health_check()
     ["account"], Get -> get_account()
     ["account"], Post -> post_account(req, ctx)
     _, _ -> wisp.not_found()
   }
+}
+
+fn health_check() {
+  json.object([#("status", json.string("ok"))])
+  |> json.to_string()
+  |> wisp.json_response(200)
 }
 
 fn get_account() {
