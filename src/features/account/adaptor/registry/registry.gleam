@@ -1,4 +1,4 @@
-import features/account/actor.{type AccountMessage}
+import features/account/adaptor/registry/actor.{type AccountMessage}
 import gleam/dict.{type Dict}
 import gleam/erlang/process.{type Subject}
 import gleam/otp/actor as ac
@@ -12,12 +12,12 @@ pub type RegistryMessage {
   )
 }
 
-type RegistryState {
-  RegistryState(accounts: Dict(String, Subject(AccountMessage)))
-}
-
 pub opaque type Registry {
   Registry(subject: Subject(RegistryMessage))
+}
+
+type RegistryState {
+  RegistryState(accounts: Dict(String, Subject(AccountMessage)))
 }
 
 pub fn start() -> Result(Registry, ac.StartError) {

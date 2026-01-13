@@ -1,22 +1,22 @@
-import features/account/registry
+import features/account/adaptor/registry/registry
+import features/account/service
 import gleam/otp/actor
 import gleam/result
 import shared/lib/uuid
 
 pub opaque type Context {
-  Context(registry: registry.Registry, generate_id: fn() -> uuid.UUID)
+  Context(account_service: service.AccountService)
 }
 
 pub fn initialize() -> Result(Context, actor.StartError) {
-  use registry <- result.try(registry.start())
+  use account_registry <- result.try(registry.start())
 
-  Context(registry:, generate_id: uuid.v4) |> Ok()
+  let account_service =
+    service.new(account_registry, fn() { uuid.value(uuid.v4()) })
+
+  Context(account_service:) |> Ok()
 }
 
-pub fn generate_id(ctx: Context) -> uuid.UUID {
-  ctx.generate_id()
-}
-
-pub fn registry(ctx: Context) -> registry.Registry {
-  ctx.registry
+pub fn account_service(ctx: Context) -> service.AccountService {
+  ctx.account_service
 }
