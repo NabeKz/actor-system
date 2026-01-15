@@ -11,3 +11,6 @@ run = """
   --exts gleam --watch src/ -- "gleam run"
 """
 
+[tasks.deploy]
+run = """
+"""

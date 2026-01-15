@@ -1,6 +1,6 @@
 // Query層: 読み取り専用の操作
 
-import features/account/application/port
+import features/account/port
 
 pub type AccountQuery {
   AccountQuery(repository: port.AccountRepository)

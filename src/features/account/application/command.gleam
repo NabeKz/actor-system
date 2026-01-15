@@ -1,6 +1,6 @@
 // Command層: 状態変更を伴う操作（CQRS）
 
-import features/account/application/port
+import features/account/port
 import features/account/model.{type Balance}
 
 pub type AccountCommand {

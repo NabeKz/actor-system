@@ -1,6 +1,5 @@
-import features/account/adaptor/registry/adapter
-import features/account/adaptor/registry/registry
-import features/account/application/port
+import features/account/adaptor/registry
+import features/account/port
 import gleam/otp/actor
 import gleam/result
 import shared/lib/uuid
@@ -11,7 +10,7 @@ pub opaque type Context {
 
 pub fn initialize() -> Result(Context, actor.StartError) {
   use account_registry <- result.try(registry.start())
-  let repository = adapter.from_registry(account_registry)
+  let repository = registry.to_repository(account_registry)
 
   Ok(
     Context(repository: repository, id_generator: fn() { uuid.value(uuid.v4()) }),
