@@ -1,5 +1,6 @@
 [tools]
 atlas = "latest"
+dotenvx = "latest"
 erlang = "latest"
 gleam = "latest"
 rebar = "latest"
