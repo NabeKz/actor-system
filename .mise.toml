@@ -2,14 +2,25 @@
 atlas = "latest"
 dotenvx = "latest"
 erlang = "latest"
+gitleaks = "latest"
 gleam = "latest"
+lefthook = "latest"
 rebar = "latest"
 sqlite = "latest"
 
 [tasks.dev]
 run = """
   watchexec --restart --clear --wrap-process=session --stop-signal SIGTERM \
-  --exts gleam --watch src/ -- "gleam run"
+  --exts gleam --watch src/ -- "mise dx -- gleam run"
+"""
+
+[tasks.dx]
+hide = true
+run = "dotenvx run --"
+
+[tasks.build]
+run = """
+mise dx -- gleam build
 """
 
 [tasks.deploy]

@@ -1,0 +1,36 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://lefthook.dev/configuration/
+#
+# pre-push:
+#   jobs:
+#     - name: packages audit
+#       tags:
+#         - frontend
+#         - security
+#       run: yarn audit
+#
+#     - name: gems audit
+#       tags:
+#         - backend
+#         - security
+#       run: bundle audit
+#
+pre-push:
+  jobs:
+    - name: build
+      run: mise run build
+
+pre-commit:
+  parallel: true
+  jobs:
+    # - name: rubocop
+    #   glob: "*.rb"
+    #   exclude:
+    #     - config/application.rb
+    #     - config/routes.rb
+    #   run: bundle exec rubocop --force-exclusion {all_files}
+
+    - name: security-check
+      run: gitleaks git .
