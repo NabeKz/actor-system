@@ -4,155 +4,49 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a distributed banking application built with Gleam, designed as a learning project for Actor model and Event Sourcing patterns. The application implements account management (deposits, withdrawals, transfers) using OTP actors with event sourcing for state management.
+Gleamで構築された分散銀行アプリケーション。ActorモデルとEvent Sourcingを学ぶための学習プロジェクト。
 
 ## Commands
 
-### Development
-
 ```sh
-# Run the application (starts HTTP server on port 5000)
-gleam run
-
-# Run with auto-reload on file changes
-mise run dev
-
-# Run tests
-gleam test
-
-# Build the project
-gleam build
-
-# Format code
-gleam format
+gleam run           # HTTPサーバー起動（ポート5000）
+gleam test          # テスト実行
+gleam build         # ビルド
+gleam format        # コードフォーマット
 ```
 
-### Tools
+## Core Concepts
 
-The project uses mise for tool management. Configured tools include:
-- Erlang (runtime)
-- Gleam (language)
-- Rebar (Erlang build tool)
-- SQLite (event store)
-- Atlas (database migrations)
-- Docker Compose (for future distributed deployment)
+### Actor階層
 
-## Architecture
+Account Registry Actorが複数のAccount Actorを管理。各アカウントは独立したActorで、Mailboxにより並行アクセスが自動的に直列化される。
 
-### Core Concepts
+### Event Sourcing
 
-This application combines three architectural patterns:
+すべての状態変更はイベントとして記録。`model.gleam` の `apply()` でイベントを適用し、`replay()` でイベントリストから状態を再構築。
 
-1. **Actor Model**: Each account is managed by an independent OTP actor with its own mailbox
-2. **Event Sourcing**: All state changes are persisted as immutable events
-3. **CQRS**: Separation between command handling (actors) and event storage
+### CQRS
 
-### System Structure
+`application/command.gleam` が状態変更、`application/query.gleam` が読み取りを担当。
 
-```
-HTTP API (Wisp/Mist)
-    ↓ process.call()
-Account Registry Actor
-    ↓
-Multiple Account Actors (one per account)
-    ↓
-Event Store (SQLite)
-```
+### Port/Adapter
 
-### Key Modules
-
-- `src/app.gleam`: Application entry point, starts the Mist HTTP server on port 5000
-- `src/app/routes.gleam`: HTTP routing and request handling
-- `src/features/account/model.gleam`: Core type definitions for events, messages, and state
-- `src/features/account/actor.gleam`: Account actor implementation (in progress)
-- `src/features/account/registry.gleam`: Registry actor for account lookup (planned)
-- `src/features/account/handler.gleam`: HTTP handlers for account endpoints (planned)
-
-### Event Types
-
-All account operations are modeled as events:
-- `AccountOpened`: Initial account creation with opening balance
-- `MoneyDeposited`: Credit transaction
-- `MoneyWithdrawn`: Debit transaction
-- `TransferSent` / `TransferReceived`: Inter-account transfers
-
-### Actor Communication
-
-Actors communicate via `process.call()` for synchronous request-response patterns:
-- HTTP layer uses `process.call()` to interact with actors
-- Actors respond via `Subject` channels
-- Each account actor maintains its own state rebuilt from events
+`port.gleam` がインターフェース定義、`adaptor/` が実装。アプリケーション層はインフラ詳細（Actor/Subject）を知らない。
 
 ## Project Phases
 
-The project follows a phased approach (see docs/plan.md for details):
-
-1. **Phase 1**: Basic actor + HTTP API (single account operations)
-2. **Phase 2**: Event sourcing (event persistence and replay)
-3. **Phase 3**: Multiple accounts + transfers (inter-actor communication)
-4. **Phase 4**: Supervisors (fault tolerance)
-5. **Phase 5**: Distribution (multi-node deployment)
-
-Current status: **Phase 1** - implementing basic Account actor
-
-## Important Patterns
-
-### Actor State Management
-
-Actors maintain in-memory state (balance, events list) reconstructed from events. State is ephemeral - persistence happens through the event store.
-
-### Concurrency Model
-
-- Each account = one actor = one mailbox = automatic serialization of operations
-- Operations on different accounts are fully concurrent
-- No manual locking or mutex needed - the actor mailbox provides ordering guarantees
-
-### HTTP to Actor Bridge
-
-The HTTP layer (Wisp) is synchronous, while actors are asynchronous. Use `process.call()` to bridge:
-- Client sends HTTP request
-- Handler calls actor via `process.call()`
-- Actor processes message and replies via `Subject`
-- Handler returns HTTP response
-
-## Testing
-
-Tests use gleeunit framework. Test files end in `_test.gleam` and test functions end in `_test`.
-
-```sh
-# Run all tests
-gleam test
-```
-
-## Dependencies
-
-Core dependencies:
-- `wisp`: Web framework for HTTP handling
-- `mist`: HTTP server
-- `gleam_otp`: OTP abstractions (actors, supervisors)
-- `gleam_erlang`: Erlang interop
-- `sqlight`: SQLite bindings for event store
-- `gleam_http`: HTTP types
-- `gleam_json`: JSON encoding/decoding
+詳細は `docs/plan.md` 参照。現在 Phase 1（基本Actor + HTTP API）を実装中。
 
 ## Development Notes
 
-### Adding New Event Types
+### 新しいイベント追加
 
-1. Add event variant to `AccountEvent` type in `src/features/account/model.gleam`
-2. Implement event application logic in actor's `apply()` function
-3. Update event replay logic in `replay()` function
+1. `model.gleam` の `AccountEvent` に追加
+2. `apply()` にイベント処理を追加
+3. Actor の message handler で検証・イベント生成
 
-### Adding New Actor Messages
+### 新しいActorメッセージ追加
 
-1. Add message variant to `AccountMessage` type in `src/features/account/model.gleam`
-2. Implement message handler in account actor
-3. Update HTTP handler to call the new message
-
-### Registry Pattern
-
-The Registry actor maintains a `Dict(String, Subject(AccountMessage))` mapping account IDs to actor subjects. It handles:
-- Account creation (spawning new actors)
-- Account lookup (finding existing actors by ID)
-- Dynamic actor lifecycle (creation on-demand)
-
+1. `adaptor/registry/actor.gleam` の `AccountMessage` に追加
+2. `handle_message()` にハンドラを追加
+3. Port に対応するメソッドを追加
