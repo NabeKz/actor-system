@@ -51,7 +51,11 @@ fn get_balance(reg: Registry, account_id: String) -> Result(Int, String) {
   Error("Not implemented yet")
 }
 
-fn deposit(reg: Registry, account_id: String, amount: Int) -> Result(Int, String) {
+fn deposit(
+  reg: Registry,
+  account_id: String,
+  amount: Int,
+) -> Result(Int, String) {
   // TODO: 実装
   let _ = reg
   let _ = account_id

@@ -55,10 +55,7 @@ pub fn start() -> Result(Registry(msg), actor.StartError) {
 }
 
 /// 読み取り専用 (ETS 直接、高速)
-pub fn get(
-  registry: Registry(msg),
-  id: String,
-) -> Result(Subject(msg), String) {
+pub fn get(registry: Registry(msg), id: String) -> Result(Subject(msg), String) {
   let Registry(table, ..) = registry
 
   case ets_lookup(table, id) {
