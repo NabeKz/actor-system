@@ -40,7 +40,7 @@ fn create_account(
     |> result.map(actor.subject)
   }
 
-  registry.get_or_create(inner, account_id, factory)
+  registry.create(inner, account_id, factory)
   |> result.map(fn(_) { Nil })
 }
 

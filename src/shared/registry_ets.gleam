@@ -24,6 +24,11 @@ type LockerMessage(msg) {
     factory: fn() -> Result(Subject(msg), actor.StartError),
     reply_to: Subject(Result(Subject(msg), String)),
   )
+  CreateOnly(
+    id: String,
+    factory: fn() -> Result(Subject(msg), actor.StartError),
+    reply_to: Subject(Result(Subject(msg), String)),
+  )
 }
 
 type LockerState {
@@ -64,6 +69,24 @@ pub fn get(registry: Registry(msg), id: String) -> Result(Subject(msg), String) 
   }
 }
 
+/// create (存在すればエラー、なければ作成)
+pub fn create(
+  registry: Registry(msg),
+  id: String,
+  factory: fn() -> Result(Subject(msg), actor.StartError),
+) -> Result(Subject(msg), String) {
+  let Registry(table, locker) = registry
+
+  // 高速パス: ETS に既にあれば即座にエラー
+  case ets_lookup(table, id) {
+    [#(_, _)] -> Error("Already exists")
+    _ -> {
+      // 遅いパス: Actor 経由で作成（競合時もエラー）
+      process.call(locker, 5000, CreateOnly(id, factory, _))
+    }
+  }
+}
+
 /// get_or_create (Actor 経由で原子性保証)
 pub fn get_or_create(
   registry: Registry(msg),
@@ -88,23 +111,38 @@ fn handle_locker_message(
   state: LockerState,
   message: LockerMessage(msg),
 ) -> actor.Next(LockerState, LockerMessage(msg)) {
-  let CreateIfNotExists(id, factory, reply_to) = message
   let LockerState(table) = state
 
-  // Actor 内で再確認 (別リクエストが先に作った可能性)
-  let result = case ets_lookup(table, id) {
-    [#(_, subject)] -> Ok(subject)
-    _ -> {
-      // factory 実行 → ETS に保存
-      factory()
-      |> result.map(fn(subject) {
-        ets_insert(table, #(id, subject))
-        subject
-      })
-      |> result.map_error(fn(_) { "Failed to create actor" })
+  let result = case message {
+    CreateIfNotExists(id, factory, reply_to) -> {
+      let res = case ets_lookup(table, id) {
+        [#(_, subject)] -> Ok(subject)
+        _ -> create_and_insert(table, id, factory)
+      }
+      process.send(reply_to, res)
+    }
+    CreateOnly(id, factory, reply_to) -> {
+      let res = case ets_lookup(table, id) {
+        [#(_, _)] -> Error("Already exists")
+        _ -> create_and_insert(table, id, factory)
+      }
+      process.send(reply_to, res)
     }
   }
 
-  process.send(reply_to, result)
+  let _ = result
   actor.continue(state)
+}
+
+fn create_and_insert(
+  table: EtsTable,
+  id: String,
+  factory: fn() -> Result(Subject(msg), actor.StartError),
+) -> Result(Subject(msg), String) {
+  factory()
+  |> result.map(fn(subject) {
+    ets_insert(table, #(id, subject))
+    subject
+  })
+  |> result.map_error(fn(_) { "Failed to create actor" })
 }
