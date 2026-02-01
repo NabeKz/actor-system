@@ -1,5 +1,6 @@
 import features/account/application/command
 import features/account/model.{type AccountId, AccountId}
+import shared/lib
 import gleam/dynamic/decode
 import gleam/json
 import wisp.{type Request, type Response}
@@ -7,7 +8,7 @@ import wisp.{type Request, type Response}
 pub fn create_account(
   req: Request,
   create: command.CreateAccount,
-  generate_id: fn() -> AccountId,
+  generate_id: lib.Generator(AccountId),
 ) -> Response {
   use json_body <- wisp.require_json(req)
 

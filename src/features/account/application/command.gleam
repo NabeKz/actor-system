@@ -1,6 +1,5 @@
-// Command層: 状態変更を伴う操作（CQRS）
-
 import features/account/model.{type AccountId, type Balance}
+import shared/lib
 
 pub type CreateAccount =
   fn(AccountId, Int) -> Result(Nil, String)
@@ -17,7 +16,7 @@ pub type CreateAccountResult {
 
 pub fn create_account(
   create: CreateAccount,
-  generate_id: fn() -> AccountId,
+  generate_id: lib.Generator(AccountId),
   initial_balance: Int,
 ) -> Result(CreateAccountResult, String) {
   let account_id = generate_id()

@@ -1,2 +1,2 @@
-pub type GenerateId =
-  fn() -> String
+pub type Generator(a) =
+  fn() -> a
