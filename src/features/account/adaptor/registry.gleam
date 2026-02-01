@@ -1,5 +1,5 @@
 import features/account/adaptor/registry/actor.{type AccountMessage}
-import features/account/port.{type AccountId, AccountId}
+import features/account/model.{type AccountId, AccountId}
 import gleam/otp/actor as ac
 import gleam/result
 import shared/registry_ets as registry
@@ -14,7 +14,9 @@ pub fn start() -> Result(Registry, ac.StartError) {
 }
 
 // 各操作のファクトリー関数
-pub fn create_account(reg: Registry) -> port.CreateAccount {
+pub fn create_account(
+  reg: Registry,
+) -> fn(AccountId, Int) -> Result(Nil, String) {
   fn(account_id: AccountId, initial_balance: Int) {
     let AccountId(id) = account_id
     let Registry(inner) = reg
@@ -28,7 +30,7 @@ pub fn create_account(reg: Registry) -> port.CreateAccount {
   }
 }
 
-pub fn get_balance(reg: Registry) -> port.GetBalance {
+pub fn get_balance(reg: Registry) -> fn(AccountId) -> Result(Int, String) {
   fn(account_id: AccountId) {
     // TODO: Phase 2で実装
     let _ = reg
@@ -37,7 +39,7 @@ pub fn get_balance(reg: Registry) -> port.GetBalance {
   }
 }
 
-pub fn deposit(reg: Registry) -> port.Deposit {
+pub fn deposit(reg: Registry) -> fn(AccountId, Int) -> Result(Int, String) {
   fn(account_id: AccountId, amount: Int) {
     // TODO: 実装
     let _ = reg
@@ -47,7 +49,7 @@ pub fn deposit(reg: Registry) -> port.Deposit {
   }
 }
 
-pub fn withdraw(reg: Registry) -> port.Withdraw {
+pub fn withdraw(reg: Registry) -> fn(AccountId, Int) -> Result(Int, String) {
   fn(account_id: AccountId, amount: Int) {
     // TODO: 実装
     let _ = reg

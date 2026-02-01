@@ -1,14 +1,22 @@
 // Command層: 状態変更を伴う操作（CQRS）
 
-import features/account/model.{type Balance}
-import features/account/port.{type AccountId}
+import features/account/model.{type AccountId, type Balance}
+
+pub type CreateAccount =
+  fn(AccountId, Int) -> Result(Nil, String)
+
+pub type Deposit =
+  fn(AccountId, Int) -> Result(Int, String)
+
+pub type Withdraw =
+  fn(AccountId, Int) -> Result(Int, String)
 
 pub type CreateAccountResult {
   CreateAccountResult(account_id: AccountId, balance: Balance)
 }
 
 pub fn create_account(
-  create: port.CreateAccount,
+  create: CreateAccount,
   generate_id: fn() -> AccountId,
   initial_balance: Int,
 ) -> Result(CreateAccountResult, String) {
@@ -24,7 +32,7 @@ pub fn create_account(
 }
 
 pub fn deposit(
-  deposit_fn: port.Deposit,
+  deposit_fn: Deposit,
   account_id: AccountId,
   amount: Int,
 ) -> Result(Int, String) {
@@ -32,7 +40,7 @@ pub fn deposit(
 }
 
 pub fn withdraw(
-  withdraw_fn: port.Withdraw,
+  withdraw_fn: Withdraw,
   account_id: AccountId,
   amount: Int,
 ) -> Result(Int, String) {

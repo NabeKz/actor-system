@@ -1,5 +1,9 @@
 // ドメインモデル
 
+pub type AccountId {
+  AccountId(String)
+}
+
 // 残高（opaque type で型安全に）
 pub opaque type Balance {
   Balance(Int)
