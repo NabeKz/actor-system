@@ -17,7 +17,7 @@ pub fn main() -> Nil {
     |> mist.new
     |> mist.bind("0.0.0.0")
     |> mist.port(5000)
-    |> mist.start
+    |> mist.start()
 
   process.sleep_forever()
 }

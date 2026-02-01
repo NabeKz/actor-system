@@ -6,8 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Gleamで構築された分散銀行アプリケーション。ActorモデルとEvent Sourcingを学ぶための学習プロジェクト。
 
-## Commands
-
 ```sh
 gleam run           # HTTPサーバー起動（ポート5000）
 gleam test          # テスト実行

@@ -8,3 +8,4 @@ database.sqlite3
 
 # Environment variables
 .env.keys
+.mise.local.toml
