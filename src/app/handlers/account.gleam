@@ -1,12 +1,14 @@
 import features/account/application/command
 import features/account/model
+import features/account/port.{type AccountId, AccountId}
 import gleam/dynamic/decode
 import gleam/json
 import wisp.{type Request, type Response}
 
 pub fn create_account(
   req: Request,
-  account_command: command.AccountCommand,
+  create: port.CreateAccount,
+  generate_id: fn() -> AccountId,
 ) -> Response {
   use json_body <- wisp.require_json(req)
 
@@ -17,10 +19,11 @@ pub fn create_account(
 
   case decode.run(json_body, decoder) {
     Ok(initial_balance) -> {
-      case command.create_account(account_command, initial_balance) {
+      case command.create_account(create, generate_id, initial_balance) {
         Ok(result) -> {
+          let AccountId(id) = result.account_id
           json.object([
-            #("account_id", json.string(result.account_id)),
+            #("account_id", json.string(id)),
             #("balance", json.int(model.balance_to_int(result.balance))),
           ])
           |> json.to_string()

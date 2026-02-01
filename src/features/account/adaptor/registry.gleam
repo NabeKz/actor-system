@@ -1,5 +1,5 @@
 import features/account/adaptor/registry/actor.{type AccountMessage}
-import features/account/port
+import features/account/port.{type AccountId, AccountId}
 import gleam/otp/actor as ac
 import gleam/result
 import shared/registry_ets as registry
@@ -13,64 +13,46 @@ pub fn start() -> Result(Registry, ac.StartError) {
   |> result.map(Registry)
 }
 
-// Registry を AccountRepository Port として提供
-pub fn to_repository(reg: Registry) -> port.AccountRepository {
-  port.AccountRepository(
-    create_account: fn(account_id: String, initial_balance: Int) {
-      create_account(reg, account_id, initial_balance)
-    },
-    get_balance: fn(account_id: String) { get_balance(reg, account_id) },
-    deposit: fn(account_id: String, amount: Int) {
-      deposit(reg, account_id, amount)
-    },
-    withdraw: fn(account_id: String, amount: Int) {
-      withdraw(reg, account_id, amount)
-    },
-  )
-}
+// 各操作のファクトリー関数
+pub fn create_account(reg: Registry) -> port.CreateAccount {
+  fn(account_id: AccountId, initial_balance: Int) {
+    let AccountId(id) = account_id
+    let Registry(inner) = reg
+    let factory = fn() {
+      actor.start(id, initial_balance)
+      |> result.map(actor.subject)
+    }
 
-fn create_account(
-  reg: Registry,
-  account_id: String,
-  initial_balance: Int,
-) -> Result(Nil, String) {
-  let Registry(inner) = reg
-  let factory = fn() {
-    actor.start(account_id, initial_balance)
-    |> result.map(actor.subject)
+    registry.create(inner, id, factory)
+    |> result.map(fn(_) { Nil })
   }
-
-  registry.create(inner, account_id, factory)
-  |> result.map(fn(_) { Nil })
 }
 
-fn get_balance(reg: Registry, account_id: String) -> Result(Int, String) {
-  // TODO: Phase 2で実装
-  let _ = reg
-  let _ = account_id
-  Error("Not implemented yet")
+pub fn get_balance(reg: Registry) -> port.GetBalance {
+  fn(account_id: AccountId) {
+    // TODO: Phase 2で実装
+    let _ = reg
+    let _ = account_id
+    Error("Not implemented yet")
+  }
 }
 
-fn deposit(
-  reg: Registry,
-  account_id: String,
-  amount: Int,
-) -> Result(Int, String) {
-  // TODO: 実装
-  let _ = reg
-  let _ = account_id
-  let _ = amount
-  Error("Not implemented yet")
+pub fn deposit(reg: Registry) -> port.Deposit {
+  fn(account_id: AccountId, amount: Int) {
+    // TODO: 実装
+    let _ = reg
+    let _ = account_id
+    let _ = amount
+    Error("Not implemented yet")
+  }
 }
 
-fn withdraw(
-  reg: Registry,
-  account_id: String,
-  amount: Int,
-) -> Result(Int, String) {
-  // TODO: 実装
-  let _ = reg
-  let _ = account_id
-  let _ = amount
-  Error("Not implemented yet")
+pub fn withdraw(reg: Registry) -> port.Withdraw {
+  fn(account_id: AccountId, amount: Int) {
+    // TODO: 実装
+    let _ = reg
+    let _ = account_id
+    let _ = amount
+    Error("Not implemented yet")
+  }
 }
