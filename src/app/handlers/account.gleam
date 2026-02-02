@@ -1,3 +1,7 @@
+import features/account/application/command
+import features/account/model.{type AccountId, AccountId}
+import gleam/dynamic/decode
+import gleam/json
 import shared/lib
 import wisp.{type Request, type Response}
 
