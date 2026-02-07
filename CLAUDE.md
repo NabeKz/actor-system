@@ -13,6 +13,19 @@ gleam build         # ビルド
 gleam format        # コードフォーマット
 ```
 
+## API Examples
+
+```sh
+# ヘルスチェック
+curl localhost:5000/health
+
+# アカウント作成
+curl -s -X POST localhost:5000/account -H 'Content-Type: application/json' -d '{"initial_balance": 1000}'
+
+# アカウント取得（account_idは作成時のレスポンスから取得）
+curl localhost:5000/account/{account_id}
+```
+
 ## Core Concepts
 
 ### Actor階層
