@@ -1,4 +1,5 @@
 import features/account/application/command
+import features/account/application/query
 import features/account/model.{type AccountId, AccountId}
 import gleam/dynamic/decode
 import gleam/json
@@ -41,8 +42,27 @@ pub fn create_account(
   }
 }
 
-pub fn get_account() -> Response {
-  json.string("ok")
-  |> json.to_string()
-  |> wisp.json_response(200)
+pub fn get_account(
+  _req: Request,
+  get_balance: query.GetBalance,
+  id: String,
+) -> Response {
+  let account_id = AccountId(id)
+
+  case query.get_account(get_balance, account_id) {
+    Ok(info) -> {
+      let AccountId(account_id_str) = info.account_id
+      json.object([
+        #("account_id", json.string(account_id_str)),
+        #("balance", json.int(info.balance)),
+      ])
+      |> json.to_string()
+      |> wisp.json_response(200)
+    }
+    Error(error_msg) -> {
+      json.object([#("error", json.string(error_msg))])
+      |> json.to_string()
+      |> wisp.json_response(404)
+    }
+  }
 }
