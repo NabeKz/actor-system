@@ -4,6 +4,7 @@ dotenvx = "latest"
 erlang = "latest"
 gitleaks = "latest"
 gleam = "latest"
+hurl = "latest"
 lefthook = "latest"
 rebar = "latest"
 sqlite = "latest"
@@ -23,6 +24,3 @@ run = """
 mise dx -- gleam build
 """
 
-[tasks.deploy]
-run = """
-"""

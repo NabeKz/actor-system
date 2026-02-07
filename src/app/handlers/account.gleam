@@ -66,3 +66,10 @@ pub fn get_account(
     }
   }
 }
+
+pub fn get_accounts(req: Request) -> Response {
+  [#("data", json.string("ok"))]
+  |> json.object()
+  |> json.to_string()
+  |> wisp.json_response(200)
+}

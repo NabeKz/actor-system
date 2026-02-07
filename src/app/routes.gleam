@@ -7,6 +7,7 @@ pub fn handle_request(h: Handlers, req: Request) -> Response {
   case wisp.path_segments(req), req.method {
     [], Get -> health_check()
     ["health"], Get -> health_check()
+    ["accounts"], Get -> h.get_accounts(req)
     ["account", id], Get -> h.get_account(req, id)
     ["account"], Post -> h.create_account(req)
     _, _ -> wisp.not_found()

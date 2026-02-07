@@ -9,6 +9,7 @@ pub type Handlers {
   Handlers(
     create_account: fn(Request) -> Response,
     get_account: fn(Request, String) -> Response,
+    get_accounts: fn(Request) -> Response,
   )
 }
 
@@ -20,5 +21,6 @@ pub fn build(
   Handlers(
     create_account: fn(req) { account.create_account(req, create, id_gen) },
     get_account: fn(req, id) { account.get_account(req, get_balance, id) },
+    get_accounts: fn(req) { account.get_accounts(req) },
   )
 }
