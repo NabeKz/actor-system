@@ -67,7 +67,7 @@ pub fn get_account(
   }
 }
 
-pub fn get_accounts(req: Request) -> Response {
+pub fn get_accounts(_req: Request) -> Response {
   [#("data", json.string("ok"))]
   |> json.object()
   |> json.to_string()
