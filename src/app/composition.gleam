@@ -10,8 +10,7 @@ pub fn build_handlers() -> Result(Handlers, actor.StartError) {
 
   let create = registry.create_account(reg)
   let id_gen = fn() { AccountId(uuid.value(uuid.v4())) }
-  let get_balance = registry.get_balance(reg)
 
-  handlers.build(create, id_gen, get_balance)
+  handlers.build(create, id_gen)
   |> Ok()
 }

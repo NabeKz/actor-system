@@ -1,0 +1,2 @@
+type CreateAuction =
+  fn() -> String
