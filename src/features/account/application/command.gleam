@@ -1,4 +1,4 @@
-import features/account/model.{type AccountId, type Balance}
+import features/account/model.{type AccountId, type Balance, AccountId}
 import shared/lib
 
 pub type CreateAccount =
@@ -16,10 +16,10 @@ pub type CreateAccountResult {
 
 pub fn create_account(
   create: CreateAccount,
-  generate_id: lib.Generator(AccountId),
+  generate_id: lib.Generator(String),
   initial_balance: Int,
 ) -> Result(CreateAccountResult, String) {
-  let account_id = generate_id()
+  let account_id = AccountId(generate_id())
 
   case create(account_id, initial_balance) {
     Ok(_) -> {
