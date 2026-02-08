@@ -2,6 +2,7 @@
 atlas = "latest"
 dotenvx = "latest"
 erlang = "latest"
+gh = "latest"
 gitleaks = "latest"
 gleam = "latest"
 hurl = "latest"

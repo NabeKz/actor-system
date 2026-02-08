@@ -32,5 +32,9 @@ pre-commit:
     #     - config/routes.rb
     #   run: bundle exec rubocop --force-exclusion {all_files}
 
+    - name: gleam-format
+      glob: "*.gleam"
+      run: gleam format {staged_files} && git add {staged_files}
+
     - name: security-check
       run: gitleaks git .
