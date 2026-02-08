@@ -5,10 +5,10 @@ erlang = "latest"
 gh = "latest"
 gitleaks = "latest"
 gleam = "latest"
-hurl = "latest"
 lefthook = "latest"
 rebar = "latest"
 sqlite = "latest"
+xh = "latest"
 
 [tasks.dev]
 run = """
@@ -25,3 +25,7 @@ run = """
 mise dx -- gleam build
 """
 
+[tasks.req]
+run = """
+  mise x -- hx localhost:5000
+"""
