@@ -10,3 +10,22 @@ pub fn value(account_id: AuctionId) -> String {
   let AuctionId(value) = account_id
   value
 }
+
+pub type AuctionState {
+  Waiting
+  Started(auction_id: AuctionId, start_price: Int)
+}
+
+pub type AuctionEvent {
+  AuctionCreated(id: AuctionId, start_price: Int)
+}
+
+pub fn replay() {
+  todo
+}
+
+pub fn apply(_state: AuctionState, event: AuctionEvent) -> AuctionState {
+  case event {
+    AuctionCreated(id, start_price) -> Started(id, start_price:)
+  }
+}

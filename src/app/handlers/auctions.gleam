@@ -1,21 +1,20 @@
 import app/handlers/helpers
-import features/auctions/appication/command
+import features/auctions/application.{
+  type CreateAuction, type Dto, type GetAuctions,
+}
 import gleam/json
 import shared/lib
 import wisp.{type Request, type Response}
 
-import features/auctions/appication/query
-import features/auctions/application.{type CreateAuction}
-
-pub fn get_auctions(_req: Request, get_auctions: query.GetAuctions) -> Response {
+pub fn get_auctions(_req: Request, get_auctions: GetAuctions) -> Response {
   get_auctions()
   |> json.array(deserialize)
   |> json.to_string()
   |> wisp.json_response(200)
 }
 
-fn deserialize(dto: query.Dto) -> json.Json {
-  let id = dto.auction_id |> query.account_id_value()
+fn deserialize(dto: Dto) -> json.Json {
+  let id = dto.auction_id |> application.auction_id_value()
   json.object([#("id", id |> json.string())])
 }
 
@@ -25,7 +24,7 @@ pub fn create_auction(
   id_gen: lib.Generator(String),
 ) -> Response {
   id_gen()
-  |> command.invoke_create_auction(create_auction)
+  |> application.invoke_create_auction(create_auction)
   |> helpers.either(ok: create_success, error: create_failure)
 }
 
