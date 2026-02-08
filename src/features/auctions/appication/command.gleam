@@ -1,2 +1,2 @@
-type CreateAuction =
+pub type CreateAuction =
   fn() -> String

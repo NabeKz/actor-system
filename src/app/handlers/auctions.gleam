@@ -13,3 +13,9 @@ fn deserialize(dto: query.Dto) -> json.Json {
   let id = dto.auction_id |> query.account_id_value()
   json.object([#("id", id |> json.string())])
 }
+
+pub fn create_auction(_req: Request) {
+  json.null()
+  |> json.to_string()
+  |> wisp.json_response(201)
+}
