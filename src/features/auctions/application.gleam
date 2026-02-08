@@ -5,3 +5,6 @@ pub const auction_query = query.invoke_get_auctions
 
 pub type CreateAuction =
   command.CreateAuction
+
+pub type GetAuctions =
+  query.GetAuctions

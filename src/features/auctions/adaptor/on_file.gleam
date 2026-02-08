@@ -16,8 +16,7 @@ pub fn get_auctions() -> List(query.Dto) {
   |> list.map(fn(entry) { query.Dto(auction_id: model.new(entry)) })
 }
 
-pub fn save_auction(
-  auction_id: model.AuctionId,
-) -> Result(Nil, simplifile.FileError) {
+pub fn save_auction(auction_id: model.AuctionId) -> Result(Nil, String) {
   simplifile.create_directory(data_dir <> "/" <> model.value(auction_id))
+  |> result.map_error(simplifile.describe_error)
 }

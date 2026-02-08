@@ -1,2 +1,4 @@
+import features/auctions/model
+
 pub type CreateAuction =
-  fn() -> String
+  fn(model.AuctionId) -> Result(Nil, String)

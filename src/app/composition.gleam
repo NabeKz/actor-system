@@ -12,6 +12,6 @@ pub fn build_handlers() -> Result(Handlers, actor.StartError) {
   let create = registry.create_account(reg)
   let id_gen = fn() { uuid.value(uuid.v4()) }
 
-  handlers.build(create, on_file.get_auctions, id_gen)
+  handlers.build(id_gen, create, on_file.save_auction, on_file.get_auctions)
   |> Ok()
 }

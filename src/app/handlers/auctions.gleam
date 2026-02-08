@@ -1,5 +1,6 @@
 import features/auctions/appication/query
 import gleam/json
+import shared/lib
 import wisp.{type Request, type Response}
 
 pub fn get_auctions(_req: Request, get_auctions: query.GetAuctions) -> Response {
@@ -14,7 +15,11 @@ fn deserialize(dto: query.Dto) -> json.Json {
   json.object([#("id", id |> json.string())])
 }
 
-pub fn create_auction(_req: Request) {
+pub fn create_auction(
+  _req: Request,
+  _create_auction: a,
+  _id_gen: lib.Generator(String),
+) {
   json.null()
   |> json.to_string()
   |> wisp.json_response(201)
