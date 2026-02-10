@@ -20,6 +20,10 @@ pub type AuctionEvent {
   AuctionCreated(id: AuctionId, start_price: Int)
 }
 
+pub fn new_state() -> AuctionState {
+  Waiting
+}
+
 pub fn replay() {
   todo
 }
