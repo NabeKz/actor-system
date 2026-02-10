@@ -1,6 +1,6 @@
 import app/handlers/helpers
 import features/auctions/application.{
-  type ApplyEvent, type Dto, type GetAuctions, type SaveEvent,
+  type ApplyEvent, type Dto, type GetAuctions, type SaveAuctionEvent,
 }
 import gleam/json
 import shared/lib
@@ -20,7 +20,7 @@ fn deserialize(dto: Dto) -> json.Json {
 
 pub fn create_auction(
   _req: Request,
-  save_event: SaveEvent,
+  save_event: SaveAuctionEvent,
   apply_event: ApplyEvent,
   id_gen: lib.Generator(String),
 ) -> Response {

@@ -22,6 +22,18 @@ pub fn initialize() -> Result(
   |> actor.start()
 }
 
+pub fn apply_event(subject: Subject(AuctionMessage)) {
+  fn(event: model.AuctionEvent) {
+    case event {
+      model.AuctionCreated(id, start_price) -> {
+        actor.call(subject, 5000, fn(reply_to) {
+          Create(id, start_price, reply_to)
+        })
+      }
+    }
+  }
+}
+
 fn handle_message(
   state: model.AuctionState,
   msg: AuctionMessage,

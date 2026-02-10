@@ -1,6 +1,6 @@
 import features/auctions/model
 
-pub type SaveEvent =
+pub type SaveAuctionEvent =
   fn(model.AuctionEvent) -> Result(Nil, String)
 
 pub type ApplyEvent =
@@ -9,7 +9,7 @@ pub type ApplyEvent =
 pub fn invoke_create_auction(
   id: String,
   start_price: Int,
-  save_event: SaveEvent,
+  save_event: SaveAuctionEvent,
   apply_event: ApplyEvent,
 ) {
   let auction_id = model.new(id)

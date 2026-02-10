@@ -4,7 +4,7 @@ import app/handlers/account
 import app/handlers/auctions
 import features/account/application/command
 import features/auctions/application.{
-  type ApplyEvent, type GetAuctions, type SaveEvent,
+  type ApplyEvent, type GetAuctions, type SaveAuctionEvent,
 }
 import shared/lib
 
@@ -22,7 +22,7 @@ pub type Handlers {
 pub fn build(
   id_gen: lib.Generator(String),
   create: command.CreateAccount,
-  save_event: SaveEvent,
+  save_event: SaveAuctionEvent,
   apply_event: ApplyEvent,
   get_auctions: GetAuctions,
 ) -> Handlers {
