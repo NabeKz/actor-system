@@ -1,8 +1,11 @@
 import features/auctions/appication/command
 import features/auctions/appication/query
 
-pub type CreateAuction =
-  command.CreateAuction
+pub type SaveEvent =
+  command.SaveEvent
+
+pub type ApplyEvent =
+  command.ApplyEvent
 
 pub type GetAuctions =
   query.GetAuctions

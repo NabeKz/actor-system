@@ -16,7 +16,12 @@ pub fn get_auctions() -> List(query.Dto) {
   |> list.map(fn(entry) { query.Dto(auction_id: model.new(entry)) })
 }
 
-pub fn save_auction(auction_id: model.AuctionId) -> Result(Nil, String) {
-  simplifile.create_directory(data_dir <> "/" <> model.value(auction_id))
-  |> result.map_error(simplifile.describe_error)
+pub fn save_event(event: model.AuctionEvent) -> Result(Nil, String) {
+  case event {
+    model.AuctionCreated(id, start_price) -> {
+      let dir = data_dir <> "/" <> model.value(id)
+      simplifile.create_directory(dir)
+      |> result.map_error(simplifile.describe_error)
+    }
+  }
 }

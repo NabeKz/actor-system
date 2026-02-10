@@ -1,6 +1,6 @@
 import app/handlers/helpers
 import features/auctions/application.{
-  type CreateAuction, type Dto, type GetAuctions,
+  type ApplyEvent, type Dto, type GetAuctions, type SaveEvent,
 }
 import gleam/json
 import shared/lib
@@ -20,11 +20,13 @@ fn deserialize(dto: Dto) -> json.Json {
 
 pub fn create_auction(
   _req: Request,
-  create_auction: CreateAuction,
+  save_event: SaveEvent,
+  apply_event: ApplyEvent,
   id_gen: lib.Generator(String),
 ) -> Response {
   id_gen()
-  |> application.invoke_create_auction(create_auction)
+  // TODO: start_priceをreqから取得
+  |> application.invoke_create_auction(5000, save_event, apply_event)
   |> helpers.either(ok: create_success, error: create_failure)
 }
 

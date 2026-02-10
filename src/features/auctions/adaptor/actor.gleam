@@ -22,7 +22,7 @@ pub fn initialize() -> Result(
   |> actor.start()
 }
 
-pub fn handle_message(
+fn handle_message(
   state: model.AuctionState,
   msg: AuctionMessage,
 ) -> actor.Next(model.AuctionState, AuctionMessage) {
