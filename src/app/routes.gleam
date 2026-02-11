@@ -7,8 +7,12 @@ pub fn handle_request(h: Handlers, req: Request) -> Response {
   case wisp.path_segments(req), req.method {
     [], Get -> health_check()
     ["health"], Get -> health_check()
-    ["auctions"], Get -> h.get_auctions(req)
-    ["auctions"], Post -> h.create_auctions(req)
+    ["auctions"], Get -> {
+      todo
+    }
+    ["auctions"], Post -> {
+      todo
+    }
     _, _ -> wisp.not_found()
   }
 }
