@@ -13,14 +13,14 @@ pub type AuctionMessage {
   Bid(price: Int, reply_to: Subject(Result(Nil, String)))
 }
 
-pub fn initialize() -> Result(
-  actor.Started(Subject(AuctionMessage)),
-  actor.StartError,
-) {
-  model.new_state()
-  |> actor.new()
-  |> actor.on_message(handle_message)
-  |> actor.start()
+pub fn initialize() -> Subject(AuctionMessage) {
+  let assert Ok(actor) =
+    model.new_state()
+    |> actor.new()
+    |> actor.on_message(handle_message)
+    |> actor.start()
+
+  actor.data
 }
 
 pub fn apply_event(subject: Subject(AuctionMessage)) {

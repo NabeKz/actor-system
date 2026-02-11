@@ -17,11 +17,11 @@ pub fn build_handlers() -> Result(Handlers, actor.StartError) {
     fn() { uuid.v4() |> uuid.value }
   }
 
-  let assert Ok(ac) = auction_actor.initialize()
+  let subject = auction_actor.initialize()
   let auction_ports =
     AuctionPorts(
       save_event: on_file.save_event,
-      apply_event: auction_actor.apply_event(ac.data),
+      apply_event: auction_actor.apply_event(subject),
       get_auctions: on_file.get_auctions,
     )
 
