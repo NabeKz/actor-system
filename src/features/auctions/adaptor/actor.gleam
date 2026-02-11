@@ -42,7 +42,7 @@ fn handle_message(
     Create(id, start_price, reply_to) -> {
       let event = model.AuctionCreated(id:, start_price:)
       let new_state = model.apply(state, event)
-
+      // actor.sendは要するにreturn
       actor.send(reply_to, Ok(Nil))
       actor.continue(new_state)
     }

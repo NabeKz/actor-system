@@ -1,13 +1,11 @@
 import app/handlers/helpers
-import features/auctions/application.{
-  type ApplyEvent, type Dto, type GetAuctions, type SaveAuctionEvent,
-}
+import features/auctions/application.{type AuctionPorts, type Dto}
 import gleam/json
 import shared/lib
 import wisp.{type Request, type Response}
 
-pub fn get_auctions(_req: Request, get_auctions: GetAuctions) -> Response {
-  get_auctions()
+pub fn get_auctions(_req: Request, ports: AuctionPorts) -> Response {
+  ports.get_auctions()
   |> json.array(deserialize)
   |> json.to_string()
   |> wisp.json_response(200)
@@ -20,13 +18,17 @@ fn deserialize(dto: Dto) -> json.Json {
 
 pub fn create_auction(
   _req: Request,
-  save_event: SaveAuctionEvent,
-  apply_event: ApplyEvent,
+  ports: AuctionPorts,
   id_gen: lib.Generator(String),
 ) -> Response {
-  id_gen()
   // TODO: start_priceをreqから取得
-  |> application.invoke_create_auction(5000, save_event, apply_event)
+  let start_price = 5000
+  id_gen()
+  |> application.invoke_create_auction(
+    start_price,
+    ports.save_event,
+    ports.apply_event,
+  )
   |> helpers.either(ok: create_success, error: create_failure)
 }
 

@@ -1,26 +1,31 @@
-import features/auctions/appication/query
-import features/auctions/model
+import gleam/int
 import gleam/list
 import gleam/result
 import simplifile
 
-const data_dir = "data/auctions"
+import features/auctions/appication/query
+import features/auctions/model.{AuctionCreated}
+import shared/lib/file
+
+const file = file.File("data", "auctions.txt")
 
 pub fn init() -> Result(Nil, simplifile.FileError) {
-  simplifile.create_directory_all(data_dir)
+  file |> file.init()
 }
 
 pub fn get_auctions() -> List(query.Dto) {
-  simplifile.read_directory(at: data_dir)
-  |> result.unwrap([])
+  file
+  |> file.rows()
   |> list.map(fn(entry) { query.Dto(auction_id: model.new(entry)) })
 }
 
 pub fn save_event(event: model.AuctionEvent) -> Result(Nil, String) {
   case event {
-    model.AuctionCreated(id, start_price) -> {
-      let dir = data_dir <> "/" <> model.value(id)
-      simplifile.create_directory(dir)
+    AuctionCreated(id, start_price) -> {
+      let row = [id |> model.value(), start_price |> int.to_string()]
+
+      file
+      |> file.append(file.ListValue(row))
       |> result.map_error(simplifile.describe_error)
     }
   }

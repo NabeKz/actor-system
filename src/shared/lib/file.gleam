@@ -1,3 +1,4 @@
+import gleam/result
 import gleam/string
 import simplifile
 
@@ -18,16 +19,25 @@ pub fn append(
   file: File,
   contents: Contents,
 ) -> Result(Nil, simplifile.FileError) {
-  let contents = case contents {
-    StringValue(contents) -> contents
-    ListValue(contents) -> contents |> string.join(",")
-  }
+  let contents =
+    case contents {
+      StringValue(contents) -> contents
+      ListValue(contents) -> contents |> string.join(",")
+    }
+    <> "\n"
 
   simplifile.append(to: file |> file_name, contents:)
 }
 
-pub fn read(file: File) {
+pub fn read(file: File) -> Result(String, simplifile.FileError) {
   simplifile.read(from: file |> file_name)
+}
+
+pub fn rows(file: File) -> List(String) {
+  case file |> read() {
+    Ok(rows) -> rows |> string.trim_end |> string.split("\n")
+    Error(_) -> []
+  }
 }
 
 fn file_name(file: File) -> String {
