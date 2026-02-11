@@ -8,6 +8,7 @@ import shared/lib
 import wisp
 
 pub fn create_auction(
+<<<<<<< HEAD
   _req: wisp.Request,
   id: lib.Generator(String),
   save: command.Save,
@@ -16,12 +17,42 @@ pub fn create_auction(
 
   command.invoke_create(id, price, save)
   |> helpers.either(create_success, create_failure)
+||||||| parent of 32058d6 (fix: typo)
+  _req: Request,
+  ports: AuctionPorts,
+  id_gen: lib.Generator(String),
+) -> Response {
+  // TODO: start_priceをreqから取得
+  let start_price = 5000
+  id_gen()
+  |> application.invoke_create_auction(
+    start_price,
+    ports.save_event,
+    ports.apply_event,
+  )
+  |> helpers.either(ok: create_success, error: create_failure)
+=======
+  _req: Request,
+  ports: AuctionPorts,
+  id_gen: lib.Generator(String),
+) -> Response {
+  // TODO: start_priceをreqから取得
+  let start_price = 5000
+  id_gen()
+  |> application.invoke_create_auction(
+    start_price,
+    ports.save_event,
+    ports.create_auction,
+  )
+  |> helpers.either(ok: create_success, error: create_failure)
+>>>>>>> 32058d6 (fix: typo)
 }
 
 fn create_success(_: Nil) {
   wisp.created()
 }
 
+<<<<<<< HEAD
 fn create_failure(_msg: String) {
   wisp.bad_request("bad request")
 }
@@ -61,4 +92,29 @@ fn auction_to_json(state: model.AuctionState) -> json.Json {
         #("status", json.string("started")),
       ])
   }
+||||||| parent of 32058d6 (fix: typo)
+fn create_failure(err: String) {
+  err
+  |> json.string
+  |> json.to_string()
+  |> wisp.json_response(400)
+=======
+pub fn bid(_req: Request, ports: AuctionPorts) -> Response {
+  // TODO: bidをreqから取得
+  let bid = 5000
+  bid
+  |> application.invoke_bid(ports.bid)
+  |> helpers.either(ok: bid_success, error: wisp.bad_request)
+}
+
+fn bid_success(_: Nil) {
+  wisp.created()
+}
+
+fn create_failure(err: String) {
+  err
+  |> json.string
+  |> json.to_string()
+  |> wisp.json_response(400)
+>>>>>>> 32058d6 (fix: typo)
 }
