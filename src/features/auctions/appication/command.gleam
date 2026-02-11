@@ -11,11 +11,15 @@ pub fn invoke_create_auction(
   start_price: Int,
   save_event: SaveAuctionEvent,
   apply_event: ApplyEvent,
-) {
+) -> Result(Nil, String) {
   let auction_id = model.new(id)
   let event = model.AuctionCreated(id: auction_id, start_price:)
   case save_event(event) {
     Ok(_) -> apply_event(event)
     Error(e) -> Error(e)
   }
+}
+
+pub fn invoke_bid() {
+  todo
 }

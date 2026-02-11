@@ -13,11 +13,12 @@ pub fn value(account_id: AuctionId) -> String {
 
 pub type AuctionState {
   Waiting
-  Started(auction_id: AuctionId, start_price: Int)
+  Started(auction_id: AuctionId, price: Int)
 }
 
 pub type AuctionEvent {
   AuctionCreated(id: AuctionId, start_price: Int)
+  BidPlaced(id: AuctionId, price: Int)
 }
 
 pub fn new_state() -> AuctionState {
@@ -28,8 +29,28 @@ pub fn replay() {
   todo
 }
 
-pub fn apply(_state: AuctionState, event: AuctionEvent) -> AuctionState {
+pub fn apply(state: AuctionState, event: AuctionEvent) -> AuctionState {
   case event {
-    AuctionCreated(id, start_price) -> Started(id, start_price:)
+    AuctionCreated(id, price) -> Started(id, price:)
+    BidPlaced(id, price) -> {
+      case state {
+        Started(..) -> {
+          Started(id, price: price)
+        }
+        _ -> state
+      }
+    }
+  }
+}
+
+pub fn validate_bid(
+  state: AuctionState,
+  price: Int,
+) -> Result(AuctionEvent, String) {
+  case state {
+    Started(id, current_price) if price > current_price ->
+      Ok(BidPlaced(id, price))
+    Started(..) -> Error("入札額が現在の価格以下です")
+    _ -> Error("オークションが開始されていません")
   }
 }
