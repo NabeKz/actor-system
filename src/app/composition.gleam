@@ -1,18 +1,14 @@
 import gleam/otp/actor
-import gleam/result
 
 import app/handlers.{type Handlers}
-import features/account/adaptor/registry
 import features/auctions/adaptor/actor as auction_actor
 import features/auctions/adaptor/on_file
 import features/auctions/application.{AuctionPorts}
 import shared/lib/uuid
 
 pub fn build_handlers() -> Result(Handlers, actor.StartError) {
-  use reg <- result.try(registry.start())
   let assert Ok(Nil) = on_file.init()
 
-  let create = registry.create_account(reg)
   let id_gen = {
     fn() { uuid.v4() |> uuid.value }
   }
@@ -25,6 +21,6 @@ pub fn build_handlers() -> Result(Handlers, actor.StartError) {
       get_auctions: on_file.get_auctions,
     )
 
-  handlers.build(id_gen, create, auction_ports)
+  handlers.build(id_gen, auction_ports)
   |> Ok()
 }
