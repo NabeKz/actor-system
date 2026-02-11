@@ -1,6 +1,9 @@
 import features/auctions/appication/command
 import features/auctions/appication/query
 
+pub type SavaAuctionEvent =
+  command.SaveAuctionEvent
+
 pub type AuctionPorts {
   AuctionPorts(
     save_event: command.SaveAuctionEvent,

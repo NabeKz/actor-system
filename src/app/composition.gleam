@@ -17,7 +17,7 @@ pub fn build_handlers() -> Result(Handlers, actor.StartError) {
     fn() { uuid.v4() |> uuid.value }
   }
 
-  let subject = auction_actor.initialize()
+  let subject = on_file.save_event |> auction_actor.initialize
   let auction_ports =
     AuctionPorts(
       save_event: on_file.save_event,
