@@ -17,8 +17,9 @@ pub fn build_handlers() -> Result(Handlers, actor.StartError) {
   let auction_ports =
     AuctionPorts(
       save_event: on_file.save_event,
-      apply_event: auction_actor.apply_event(subject),
+      create_auction: auction_actor.create_auction(subject),
       get_auctions: on_file.get_auctions,
+      bid: auction_actor.place_bid(subject),
     )
 
   handlers.build(id_gen, auction_ports)

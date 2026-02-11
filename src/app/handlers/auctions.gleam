@@ -27,7 +27,7 @@ pub fn create_auction(
   |> application.invoke_create_auction(
     start_price,
     ports.save_event,
-    ports.apply_event,
+    ports.create_auction,
   )
   |> helpers.either(ok: create_success, error: create_failure)
 }
@@ -36,6 +36,18 @@ fn create_success(_: Nil) {
   json.null()
   |> json.to_string()
   |> wisp.json_response(201)
+}
+
+pub fn bid(_req: Request, ports: AuctionPorts) -> Response {
+  // TODO: bidをreqから取得
+  let bid = 5000
+  bid
+  |> application.invoke_bid(ports.bid)
+  |> helpers.either(ok: bid_success, error: wisp.bad_request)
+}
+
+fn bid_success(_: Nil) {
+  wisp.created()
 }
 
 fn create_failure(err: String) {

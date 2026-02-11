@@ -1,10 +1,12 @@
-import features/auctions/application.{type SavaAuctionEvent}
+import features/auctions/appication/command
+import features/auctions/application.{type SaveAuctionEvent}
 import features/auctions/model.{type AuctionState}
 import gleam/erlang/process.{type Subject}
 import gleam/otp/actor
+import gleam/result
 
-pub type ActorState {
-  ActorState(auction: AuctionState, save_event: SavaAuctionEvent)
+type ActorState {
+  ActorState(auction: AuctionState, save_event: SaveAuctionEvent)
 }
 
 // actorに対して外部から可能な操作を書く
@@ -18,7 +20,7 @@ pub type AuctionMessage {
   Bid(price: Int, reply_to: Subject(Result(Nil, String)))
 }
 
-pub fn initialize(save_event: SavaAuctionEvent) -> Subject(AuctionMessage) {
+pub fn initialize(save_event: SaveAuctionEvent) -> Subject(AuctionMessage) {
   let assert Ok(actor) =
     ActorState(auction: model.new_state(), save_event:)
     |> actor.new()
@@ -28,17 +30,16 @@ pub fn initialize(save_event: SavaAuctionEvent) -> Subject(AuctionMessage) {
   actor.data
 }
 
-pub fn apply_event(subject: Subject(AuctionMessage)) {
-  fn(event: model.AuctionEvent) {
-    case event {
-      model.AuctionCreated(id, start_price) -> {
-        actor.call(subject, 5000, Create(id, start_price, _))
-      }
-      model.BidPlaced(_, price) -> {
-        actor.call(subject, 5000, Bid(price, _))
-      }
-    }
+pub fn create_auction(
+  subject: Subject(AuctionMessage),
+) -> application.CreateAuction {
+  fn(id: model.AuctionId, start_price: Int) {
+    actor.call(subject, 5000, Create(id, start_price, _))
   }
+}
+
+pub fn place_bid(subject: Subject(AuctionMessage)) -> command.PlaceBid {
+  fn(price: Int) { actor.call(subject, 5000, Bid(price, _)) }
 }
 
 fn update(auction: AuctionState, state: ActorState) -> ActorState {
@@ -58,13 +59,17 @@ fn handle_message(
       actor.continue(new_auction |> update(state))
     }
     Bid(price, reply_to) -> {
-      let event = model.validate_bid(state.auction, price)
+      let result = {
+        use event <- result.try(state.auction |> model.validate_bid(price))
+        use _ <- result.try(event |> state.save_event)
+        let new_auction = model.apply(state.auction, event)
+        Ok(new_auction)
+      }
 
-      case event {
-        Ok(event) -> {
-          let new_state = model.apply(state.auction, event)
+      case result {
+        Ok(new_auction) -> {
           actor.send(reply_to, Ok(Nil))
-          actor.continue(new_state |> update(state))
+          actor.continue(new_auction |> update(state))
         }
         Error(msg) -> {
           actor.send(reply_to, Error(msg))

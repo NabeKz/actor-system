@@ -8,7 +8,11 @@ type Handler =
   fn(Request) -> Response
 
 pub type Handlers {
-  Handlers(get_auctions: fn(Request) -> Response, create_auctions: Handler)
+  Handlers(
+    get_auctions: fn(Request) -> Response,
+    create_auctions: Handler,
+    auction_bid: Handler,
+  )
 }
 
 pub fn build(
@@ -18,5 +22,6 @@ pub fn build(
   Handlers(
     get_auctions: auctions.get_auctions(_, auction_ports),
     create_auctions: auctions.create_auction(_, auction_ports, id_gen),
+    auction_bid: auctions.bid(_, auction_ports),
   )
 }
