@@ -1,4 +1,4 @@
-import features/auction/actor
+import features/auction/adaptor/actor
 import features/auction/application
 
 import app/handlers.{type Handlers}
