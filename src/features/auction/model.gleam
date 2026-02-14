@@ -29,6 +29,6 @@ pub fn validate_update(current_price: Int, price: Int) -> Result(Int, String) {
 pub fn validate_price(value: Int) -> Result(Int, String) {
   case value > 0 {
     True -> Ok(value)
-    False -> Error("price must be grater than 0")
+    False -> Error("price must be greater than 0")
   }
 }

@@ -3,7 +3,7 @@ import features/auction/adaptor/on_file
 import features/auction/application
 import shared/lib/file
 
-import app/handlers.{type Handlers}
+import app/handlers
 import shared/lib/uuid
 
 const dir = "data"
