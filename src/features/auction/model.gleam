@@ -22,7 +22,7 @@ pub fn apply(_state: AuctionState, event: AuctionEvent) -> AuctionState {
 pub fn validate_update(current_price: Int, price: Int) -> Result(Int, String) {
   case price > current_price {
     True -> Ok(price)
-    False -> Error("price must be gt current price")
+    False -> Error("price must be greater than current price")
   }
 }
 

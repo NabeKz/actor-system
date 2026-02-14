@@ -1,5 +1,4 @@
 import app/handlers/helpers
-import features/auction/application
 import features/auction/cqrs/command
 import shared/lib
 import wisp
@@ -7,7 +6,7 @@ import wisp
 pub fn create_auction(
   _req: wisp.Request,
   id: lib.Generator(String),
-  save: application.Save,
+  save: command.Save,
 ) {
   let price = 5000
 
