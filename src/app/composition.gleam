@@ -12,7 +12,6 @@ const dir = "data"
 pub fn build_handlers() {
   let id_gen = fn() { uuid.v4() |> uuid.value }
 
-<<<<<<< HEAD
   let file = file.init(dir, "auction.txt")
   let save_event = on_file.save_event(file, _)
 
@@ -25,22 +24,6 @@ pub fn build_handlers() {
       fn() { file |> on_file.restore() },
       save_event,
       upsert_projection,
-||||||| parent of 32058d6 (fix: typo)
-  let subject = on_file.save_event |> auction_actor.initialize
-  let auction_ports =
-    AuctionPorts(
-      save_event: on_file.save_event,
-      apply_event: auction_actor.apply_event(subject),
-      get_auctions: on_file.get_auctions,
-=======
-  let subject = on_file.save_event |> auction_actor.initialize
-  let auction_ports =
-    AuctionPorts(
-      save_event: on_file.save_event,
-      create_auction: auction_actor.create_auction(subject),
-      get_auctions: on_file.get_auctions,
-      bid: auction_actor.place_bid(subject),
->>>>>>> 32058d6 (fix: typo)
     )
 
   let auction_port =
