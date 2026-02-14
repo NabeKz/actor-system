@@ -15,12 +15,7 @@ pub fn build(
   id_gen: lib.Generator(String),
   auction_port: application.AuctionPort,
 ) -> Handlers {
-  let create_auction = auctions.create_auction(
-    _,
-    id_gen,
-    auction_port.save,
-    auction_port.update,
-  )
+  let create_auction = auctions.create_auction(_, id_gen, auction_port.save)
 
   Handlers(create_auction:)
 }

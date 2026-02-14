@@ -1,31 +1,22 @@
+import gleam/result
 import gleam/string
 import simplifile
 
 pub type File {
-  File(data_dir: String, name: String)
+  File(dir: String, name: String)
 }
 
-pub type Contents {
-  StringValue(String)
-  ListValue(List(String))
+pub fn init(dir: String, name: String) -> File {
+  let file = File(dir:, name:)
+  let assert Ok(_) = simplifile.create_directory_all(file.dir)
+  file
 }
 
-pub fn init(file: File) -> Result(Nil, simplifile.FileError) {
-  simplifile.create_directory_all(file.data_dir)
-}
-
-pub fn append(
-  file: File,
-  contents: Contents,
-) -> Result(Nil, simplifile.FileError) {
-  let contents =
-    case contents {
-      StringValue(contents) -> contents
-      ListValue(contents) -> contents |> string.join(",")
-    }
-    <> "\n"
+pub fn append(file: File, contents: List(String)) -> Result(Nil, String) {
+  let contents = contents |> string.join(",") <> "\n"
 
   simplifile.append(to: file |> file_name, contents:)
+  |> result.map_error(simplifile.describe_error)
 }
 
 pub fn read(file: File) -> Result(String, simplifile.FileError) {
@@ -40,5 +31,5 @@ pub fn rows(file: File) -> List(String) {
 }
 
 fn file_name(file: File) -> String {
-  [file.data_dir, "/", file.name] |> string.concat
+  file.dir <> "/" <> file.name
 }

@@ -16,21 +16,18 @@ pub type Update =
   fn(model.AuctionEvent) -> Result(Nil, String)
 
 pub type AuctionPort {
-  AuctionPort(save: Save, update: Update)
+  AuctionPort(save: Save)
 }
 
 pub fn invoke_create(
   id_gen: lib.Generator(String),
   price: Int,
   save: Save,
-  update: Update,
 ) -> Result(Nil, String) {
   use price <- result.try(price |> model.validate_price)
 
-  let event = id_gen() |> model.Created(price)
   id_gen()
   |> save(price)
-  |> result.try(fn(_) { event |> update })
 }
 
 pub fn invoke_bid_place() -> Result(String, Nil) {
