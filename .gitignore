@@ -10,3 +10,4 @@ database.sqlite3
 .env.keys
 .mise.local.toml
 data
+docs/actor-pattern.md

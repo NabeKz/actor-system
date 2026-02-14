@@ -1,46 +1,64 @@
 import app/handlers/helpers
-import features/auctions/application.{type AuctionPorts, type Dto}
+import features/auction/application
+import features/auction/cqrs/command
+import features/auction/model
 import gleam/json
+import gleam/list
 import shared/lib
-import wisp.{type Request, type Response}
-
-pub fn get_auctions(_req: Request, ports: AuctionPorts) -> Response {
-  ports.get_auctions()
-  |> json.array(deserialize)
-  |> json.to_string()
-  |> wisp.json_response(200)
-}
-
-fn deserialize(dto: Dto) -> json.Json {
-  let id = dto.auction_id |> application.auction_id_value()
-  json.object([#("id", id |> json.string())])
-}
+import wisp
 
 pub fn create_auction(
-  _req: Request,
-  ports: AuctionPorts,
-  id_gen: lib.Generator(String),
-) -> Response {
-  // TODO: start_priceをreqから取得
-  let start_price = 5000
-  id_gen()
-  |> application.invoke_create_auction(
-    start_price,
-    ports.save_event,
-    ports.apply_event,
-  )
-  |> helpers.either(ok: create_success, error: create_failure)
+  _req: wisp.Request,
+  id: lib.Generator(String),
+  save: command.Save,
+) {
+  let price = 5000
+
+  command.invoke_create(id, price, save)
+  |> helpers.either(create_success, create_failure)
 }
 
 fn create_success(_: Nil) {
-  json.null()
-  |> json.to_string()
-  |> wisp.json_response(201)
+  wisp.created()
 }
 
-fn create_failure(err: String) {
-  err
-  |> json.string
-  |> json.to_string()
-  |> wisp.json_response(400)
+fn create_failure(_msg: String) {
+  wisp.bad_request("bad request")
+}
+
+pub fn get_auction(
+  _req: wisp.Request,
+  id: String,
+  get_by_id: application.RestoreProjection,
+) {
+  get_by_id(id)
+  |> helpers.either(ok: auction_to_json_response, error: fn(_) {
+    wisp.not_found()
+  })
+}
+
+pub fn list_auctions(_req: wisp.Request, get_list: application.ListProjection) {
+  get_list()
+  |> list.map(auction_to_json)
+  |> json.preprocessed_array
+  |> json.to_string
+  |> wisp.json_response(200)
+}
+
+fn auction_to_json_response(state: model.AuctionState) {
+  auction_to_json(state)
+  |> json.to_string
+  |> wisp.json_response(200)
+}
+
+fn auction_to_json(state: model.AuctionState) -> json.Json {
+  case state {
+    model.NotStarted -> json.object([#("status", json.string("not_started"))])
+    model.Started(id, price) ->
+      json.object([
+        #("id", json.string(id)),
+        #("price", json.int(price)),
+        #("status", json.string("started")),
+      ])
+  }
 }

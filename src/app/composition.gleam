@@ -1,26 +1,38 @@
-import gleam/otp/actor
+import features/auction/adaptor/actor
+import features/auction/adaptor/on_ets
+import features/auction/adaptor/on_file
+import features/auction/application
+import shared/lib/file
 
-import app/handlers.{type Handlers}
-import features/auctions/adaptor/actor as auction_actor
-import features/auctions/adaptor/on_file
-import features/auctions/application.{AuctionPorts}
+import app/handlers
 import shared/lib/uuid
 
-pub fn build_handlers() -> Result(Handlers, actor.StartError) {
-  let assert Ok(Nil) = on_file.init()
+const dir = "data"
 
-  let id_gen = {
-    fn() { uuid.v4() |> uuid.value }
-  }
+pub fn build_handlers() {
+  let id_gen = fn() { uuid.v4() |> uuid.value }
 
-  let subject = on_file.save_event |> auction_actor.initialize
-  let auction_ports =
-    AuctionPorts(
-      save_event: on_file.save_event,
-      apply_event: auction_actor.apply_event(subject),
-      get_auctions: on_file.get_auctions,
+  let file = file.init(dir, "auction.txt")
+  let save_event = on_file.save_event(file, _)
+
+  let ets_table = on_ets.init()
+  let upsert_projection = fn(id, state) { on_ets.upsert(ets_table, id, state) }
+  let restore_projection = on_ets.get(ets_table, _)
+
+  let auction_subject =
+    actor.initialize(
+      fn() { file |> on_file.restore() },
+      save_event,
+      upsert_projection,
     )
 
-  handlers.build(id_gen, auction_ports)
+  let auction_port =
+    application.AuctionPort(
+      save: actor.create(auction_subject),
+      get_by_id: restore_projection,
+      get_list: fn() { on_ets.get_all(ets_table) },
+    )
+
+  handlers.build(id_gen, auction_port)
   |> Ok()
 }
