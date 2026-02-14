@@ -1,3 +1,5 @@
+import gleam/list
+
 pub type AuctionEvent {
   Created(id: String, price: Int)
   BidPlaced(id: String, price: Int)
@@ -17,6 +19,11 @@ pub fn apply(_state: AuctionState, event: AuctionEvent) -> AuctionState {
     Created(id, price) -> Started(id:, price:)
     BidPlaced(id, price) -> Started(id:, price:)
   }
+}
+
+pub fn replay(events: List(AuctionEvent)) {
+  events
+  |> list.fold(init(), apply)
 }
 
 pub fn validate_update(current_price: Int, price: Int) -> Result(Int, String) {
