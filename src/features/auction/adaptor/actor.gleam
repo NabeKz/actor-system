@@ -1,10 +1,14 @@
-import features/auction/application.{type SaveEvent}
+import features/auction/application.{type RestoreEvents, type SaveEvent}
 import features/auction/model
 import gleam/erlang/process.{type Subject}
 import gleam/otp/actor
 
 pub type ActorState {
-  ActorState(auction: model.AuctionState, save_event: SaveEvent)
+  ActorState(
+    auction: model.AuctionState,
+    save_event: SaveEvent,
+    upsert_projection: application.UpsertProjection,
+  )
 }
 
 pub type AuctionMessage {
@@ -12,10 +16,15 @@ pub type AuctionMessage {
   Bid(reply_to: Subject(Result(Nil, String)))
 }
 
-pub fn initialize(save_event: SaveEvent) -> Subject(AuctionMessage) {
+pub fn initialize(
+  restore_events: RestoreEvents,
+  save_event: SaveEvent,
+  upsert_projection: application.UpsertProjection,
+) -> Subject(AuctionMessage) {
   let assert Ok(ac) =
-    model.init()
-    |> ActorState(auction: _, save_event:)
+    restore_events()
+    |> model.replay
+    |> ActorState(auction: _, save_event:, upsert_projection:)
     |> actor.new()
     |> actor.on_message(handle_message)
     |> actor.start()
@@ -38,6 +47,7 @@ fn handle_message(
       case result {
         Ok(_) -> {
           let auction = model.apply(state.auction, event)
+          let _ = state.upsert_projection(id, auction)
           actor.send(reply_to, Ok(Nil))
           actor.continue(ActorState(..state, auction:))
         }
